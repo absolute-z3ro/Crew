@@ -67,6 +67,9 @@ dependencies {
     //Glide
     implementation "com.github.bumptech.glide:glide:$glide_version"
 
+    //klaxon
+    implementation "com.beust:klaxon:$klaxon_version"
+
     //MaterialComponents
     implementation "com.google.android.material:material:$material_version"
 

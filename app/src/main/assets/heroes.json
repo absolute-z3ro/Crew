@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Spider-Man",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/050/133.jpg"
+  },
+  {
+    "name": "Captain America",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/050/274.jpg"
+  },
+  {
+    "name": "Iron Man",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/050/85.jpg"
+  },
+  {
+    "name": "Thor",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/1296.jpg"
+  },
+  {
+    "name": "Hulk",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/125.jpg"
+  },
+  {
+    "name": "Spider-Woman",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/883.jpg"
+  },
+  {
+    "name": "Wolverine",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/161.jpg"
+  },
+  {
+    "name": "Deadpool",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/10090.jpg"
+  },
+  {
+    "name": "Captain Marvel",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/279.jpg"
+  },
+  {
+    "name": "Scarlet Witch",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/444.jpg"
+  },
+  {
+    "name": "Black Widow",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/618.jpg"
+  },
+  {
+    "name": "Nebula",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/10632.jpg"
+  },
+  {
+    "name": "Groot",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/10017.jpg"
+  },
+  {
+    "name": "Luke Cage",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/269.jpg"
+  },
+  {
+    "name": "Doctor Strange",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/55.jpg"
+  },
+  {
+    "name": "Black Panther",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/247.jpg"
+  },
+  {
+    "name": "Nick Fury",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/326.jpg"
+  },
+  {
+    "name": "Nova",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/109.jpg"
+  },
+  {
+    "name": "Iron Fist",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/1120.jpg"
+  },
+  {
+    "name": "Falcon",
+    "imageUrl": "https://www.superherodb.com/pictures2/portraits/10/100/56.jpg"
+  }
+]
