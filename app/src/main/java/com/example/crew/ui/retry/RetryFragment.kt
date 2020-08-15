@@ -20,6 +20,7 @@ class RetryFragment : Fragment() {
             Navigation.findNavController(requireActivity(), R.id.nav_host)
                 .navigate(R.id.action_retry_to_home)
         }
+
         return binding.root
     }
 }
