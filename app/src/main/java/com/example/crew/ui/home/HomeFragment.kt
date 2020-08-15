@@ -22,11 +22,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
-    override fun onStart() {
-        super.onStart()
         homeViewModel.listOfHeroes.observe(viewLifecycleOwner) { list ->
             if (list.isNotEmpty()) {
                 binding.loadingText.visibility = View.GONE
@@ -34,6 +30,8 @@ class HomeFragment : Fragment() {
             } else binding.loadingText.visibility = View.VISIBLE
 
         }
+
+        return binding.root
     }
 
     private fun setRecyclerView(list: List<Hero>) {
