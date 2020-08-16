@@ -2,38 +2,17 @@ package com.example.crew.ui.home
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
-import com.example.crew.data.Hero
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.lang.reflect.Type
+import com.example.crew.data.FirebaseQueryLiveData
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
-class HomeViewModel(private val _application: Application) : AndroidViewModel(_application) {
+class HomeViewModel(_application: Application) : AndroidViewModel(_application) {
 
-    private fun readAsset(): String {
-        return _application.applicationContext.assets.open("heroes.json").bufferedReader()
-            .use { it.readText() }
-    }
+    private val heroesDatabaseReference: DatabaseReference =
+        FirebaseDatabase.getInstance().reference
 
-    private fun jsonStringToList(jsonString: String): List<Hero> {
-        val type: Type = Types.newParameterizedType(List::class.java, Hero::class.java)
-        val moshi: Moshi = Moshi.Builder().build()
-        val jsonAdapter: JsonAdapter<List<Hero>> = moshi.adapter(type)
-        return jsonAdapter.fromJson(jsonString) ?: emptyList()
-    }
+    private val firebaseQueryLiveData: FirebaseQueryLiveData =
+        FirebaseQueryLiveData(heroesDatabaseReference)
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    suspend fun readJsonSuspending(): List<Hero> =
-        withContext(Dispatchers.IO) {
-            val jsonString = readAsset()
-            jsonStringToList(jsonString)
-        }
-
-    val listOfHeroes: LiveData<List<Hero>> = liveData {
-        emit(readJsonSuspending())
-    }
+    val dataSnapshotLiveData: FirebaseQueryLiveData = firebaseQueryLiveData
 }

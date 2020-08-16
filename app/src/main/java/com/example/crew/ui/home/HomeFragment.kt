@@ -1,6 +1,7 @@
 package com.example.crew.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.navigation.Navigation
+import com.example.crew.R
 import com.example.crew.data.Hero
 import com.example.crew.databinding.FragmentHomeBinding
 
@@ -23,12 +26,17 @@ class HomeFragment : Fragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        homeViewModel.listOfHeroes.observe(viewLifecycleOwner) { list ->
-            if (list.isNotEmpty()) {
+        homeViewModel.dataSnapshotLiveData.observe(viewLifecycleOwner) { dataSnapshot ->
+            if (dataSnapshot != null) {
+//                homeViewModel.processData(dataSnapshot)
                 binding.loadingText.visibility = View.GONE
-                setRecyclerView(list)
-            } else binding.loadingText.visibility = View.VISIBLE
-
+//                setRecyclerView(homeViewModel.listOfHeroes)
+                Log.d("Fragment", dataSnapshot.value.toString())
+            } else {
+                //binding.loadingText.visibility = View.VISIBLE
+                Navigation.findNavController(requireActivity(), R.id.nav_host)
+                    .navigate(R.id.action_home_to_retry)
+            }
         }
 
         return binding.root
