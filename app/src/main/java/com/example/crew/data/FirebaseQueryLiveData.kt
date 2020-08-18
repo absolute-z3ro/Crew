@@ -29,17 +29,23 @@ class FirebaseQueryLiveData : LiveData<DataSnapshot?> {
         query.removeEventListener(listener)
     }
 
+    fun stopListener() {
+        query.removeEventListener(listener)
+    }
+
     private inner class MyValueEventListener : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
+            Log.d(LOG_TAG, "Listening to $query")
             value = dataSnapshot
         }
 
         override fun onCancelled(databaseError: DatabaseError) {
-            Log.e(
+            Log.d(
                 LOG_TAG,
                 "Can't listen to query $query",
                 databaseError.toException()
             )
+            value = null
         }
     }
 
