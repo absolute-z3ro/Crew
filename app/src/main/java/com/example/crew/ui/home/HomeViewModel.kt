@@ -12,7 +12,8 @@ import kotlinx.coroutines.withContext
 
 class HomeViewModel(_application: Application) : AndroidViewModel(_application) {
 
-    val heroesDatabaseReference: DatabaseReference? = FirebaseDatabase.getInstance().reference
+    private val heroesDatabaseReference: DatabaseReference? =
+        FirebaseDatabase.getInstance().reference
 
     private val firebaseQueryLiveData: FirebaseQueryLiveData =
         FirebaseQueryLiveData(heroesDatabaseReference!!)

@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import com.example.crew.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.concurrent.timerTask
 
 class HomeFragment : Fragment() {
 
@@ -28,6 +30,8 @@ class HomeFragment : Fragment() {
     private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+    private val handler = Handler()
+    private val connectivityTimer = Timer()
     private var list = emptyList<Hero>()
 
     override fun onCreateView(
@@ -36,8 +40,13 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        setConnectivityCheck()
+        setConnectionTimeout()
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setConnectivityCheck()
     }
 
     override fun onStop() {
@@ -45,20 +54,44 @@ class HomeFragment : Fragment() {
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
+    private fun setConnectionTimeout() {
+        connectivityTimer.schedule(timerTask {
+            Log.d(TAG, "Network Unavailable")
+            connectivityTimer.cancel()
+            if (list.isEmpty()) {
+                navigateToRetry()
+            }
+        }, 5000L)
+    }
+
 
     private fun setConnectivityCheck() {
+        var navigationPending = false
+        val navigate = Runnable {
+            navigateToRetry()
+            navigationPending = false
+        }
+
         connectivityManager =
             requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                Log.d(TAG, "NetworkAvailable")
-                requireActivity().runOnUiThread { setupFirebase() }
+                Log.d(TAG, "Network Available")
+                requireActivity().runOnUiThread {
+                    connectivityTimer.cancel()
+                    if (navigationPending) handler.removeCallbacks(navigate)
+                    else setupFirebase()
+                    navigationPending = false
+                }
             }
 
             override fun onLost(network: Network) {
-                Log.d(TAG, "NetworkLost")
-                requireActivity().runOnUiThread { navigateToRetry() }
+                Log.d(TAG, "Network Lost")
+                requireActivity().runOnUiThread {
+                    handler.postDelayed(navigate, 10000L)
+                    navigationPending = true
+                }
             }
 
             override fun onUnavailable() {
@@ -72,18 +105,6 @@ class HomeFragment : Fragment() {
             if (connectivityManager.activeNetworkInfo?.isConnected == true) setupFirebase()
             else navigateToRetry()
         }
-
-        val timer = Timer()
-        val timerTask = object : TimerTask() {
-            override fun run() {
-                timer.cancel()
-                if (list.isEmpty()) {
-                    homeViewModel.dataSnapshotLiveData.stopListener()
-                    navigateToRetry()
-                }
-            }
-        }
-        timer.schedule(timerTask, 5000L)
     }
 
 
