@@ -10,7 +10,7 @@ import com.google.firebase.database.*
 class FirebaseQueryLiveData : LiveData<DataSnapshot?> {
     private val query: Query
     private val listener = MyValueEventListener()
-    private var listenerRemovePending = false
+    private var removeListenerPending = false
     private val handler = Handler()
     private val removeListener: Runnable
 
@@ -19,7 +19,7 @@ class FirebaseQueryLiveData : LiveData<DataSnapshot?> {
         this.query = query
         removeListener = Runnable {
             query.removeEventListener(listener)
-            listenerRemovePending = false
+            removeListenerPending = false
         }
     }
 
@@ -27,25 +27,21 @@ class FirebaseQueryLiveData : LiveData<DataSnapshot?> {
         query = ref
         removeListener = Runnable {
             query.removeEventListener(listener)
-            listenerRemovePending = false
+            removeListenerPending = false
         }
     }
 
     override fun onActive() {
         Log.d(LOG_TAG, "onActive")
-        if (listenerRemovePending) handler.removeCallbacks(removeListener)
+        if (removeListenerPending) handler.removeCallbacks(removeListener)
         else query.addValueEventListener(listener)
-        listenerRemovePending = false
+        removeListenerPending = false
     }
 
     override fun onInactive() {
         Log.d(LOG_TAG, "onInactive")
         handler.postDelayed(removeListener, 2000L)
-        listenerRemovePending = true
-    }
-
-    fun stopListener() {
-        query.removeEventListener(listener)
+        removeListenerPending = true
     }
 
     private inner class MyValueEventListener : ValueEventListener {

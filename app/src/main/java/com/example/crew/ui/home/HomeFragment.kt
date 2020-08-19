@@ -17,7 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.Navigation
 import com.example.crew.R
-import com.example.crew.data.Hero
 import com.example.crew.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,7 +31,6 @@ class HomeFragment : Fragment() {
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val handler = Handler()
     private val connectivityTimer = Timer()
-    private var list = emptyList<Hero>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +56,7 @@ class HomeFragment : Fragment() {
         connectivityTimer.schedule(timerTask {
             Log.d(TAG, "Network Unavailable")
             connectivityTimer.cancel()
-            if (list.isEmpty()) {
+            if (homeViewModel.list.isEmpty()) {
                 navigateToRetry()
             }
         }, 5000L)
@@ -109,30 +107,31 @@ class HomeFragment : Fragment() {
 
 
     private fun setupFirebase() {
-        homeViewModel.dataSnapshotLiveData.observe(viewLifecycleOwner) { dataSnapshot ->
+        homeViewModel.firebaseQueryLiveData.observe(viewLifecycleOwner) { dataSnapshot ->
             if (dataSnapshot != null) {
                 lifecycleScope.launch(Dispatchers.Main) {
-                    list = homeViewModel.getList(dataSnapshot)
+                    homeViewModel.list = homeViewModel.getList(dataSnapshot)
                     binding.loadingText.visibility = View.GONE
-                    setRecyclerView(list)
+                    setRecyclerView()
                 }
             } else {
-                Navigation.findNavController(requireActivity(), R.id.nav_host)
-                    .navigate(R.id.action_home_to_retry)
+                homeViewModel.list = emptyList()
+                navigateToRetry()
             }
         }
     }
 
-    private fun setRecyclerView(list: List<Hero>) {
+    private fun setRecyclerView() {
         val adapter = HomeAdapter()
         binding.recyclerView.adapter = adapter
-        adapter.list = list
+        adapter.list = homeViewModel.list
         adapter.onItemClick = { hero ->
             Toast.makeText(requireContext(), hero.name, Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun navigateToRetry() {
+        homeViewModel.list = emptyList()
         Navigation.findNavController(requireActivity(), R.id.nav_host)
             .navigate(R.id.action_home_to_retry)
     }
