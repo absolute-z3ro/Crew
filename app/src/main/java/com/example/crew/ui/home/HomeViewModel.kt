@@ -6,14 +6,13 @@ import com.example.crew.data.Hero
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class HomeViewModel : ViewModel() {
 
     private val heroesDatabaseReference: DatabaseReference? =
-        FirebaseDatabase.getInstance().apply { setLogLevel(Logger.Level.DEBUG) }.reference
+        FirebaseDatabase.getInstance().reference
 
     val firebaseQueryLiveData = FirebaseQueryLiveData(heroesDatabaseReference!!)
 
