@@ -1,12 +1,6 @@
 package com.example.crew.ui.home
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.Network
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,17 +14,11 @@ import com.example.crew.R
 import com.example.crew.databinding.FragmentHomeBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
-import kotlin.concurrent.timerTask
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private val homeViewModel: HomeViewModel by viewModels()
-    private lateinit var connectivityManager: ConnectivityManager
-    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
-    private val handler = Handler()
-    private val connectivityTimer = Timer()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,73 +26,9 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        setConnectionTimeout()
+        setupFirebase()
         return binding.root
     }
-
-    override fun onStart() {
-        super.onStart()
-        setConnectivityCheck()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        connectivityManager.unregisterNetworkCallback(networkCallback)
-    }
-
-    private fun setConnectionTimeout() {
-        connectivityTimer.schedule(timerTask {
-            Log.d(TAG, "Network Unavailable")
-            connectivityTimer.cancel()
-            if (homeViewModel.list.isEmpty()) {
-                navigateToRetry()
-            }
-        }, 5000L)
-    }
-
-
-    private fun setConnectivityCheck() {
-        var navigationPending = false
-        val navigate = Runnable {
-            navigateToRetry()
-            navigationPending = false
-        }
-
-        connectivityManager =
-            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                Log.d(TAG, "Network Available")
-                requireActivity().runOnUiThread {
-                    connectivityTimer.cancel()
-                    if (navigationPending) handler.removeCallbacks(navigate)
-                    else setupFirebase()
-                    navigationPending = false
-                }
-            }
-
-            override fun onLost(network: Network) {
-                Log.d(TAG, "Network Lost")
-                requireActivity().runOnUiThread {
-                    handler.postDelayed(navigate, 10000L)
-                    navigationPending = true
-                }
-            }
-
-            override fun onUnavailable() {
-                Log.d(TAG, "This callback method is rekt and doesn't work.")
-            }
-        }
-
-        if (Build.VERSION.SDK_INT > 23)
-            connectivityManager.registerDefaultNetworkCallback(networkCallback)
-        else {
-            if (connectivityManager.activeNetworkInfo?.isConnected == true) setupFirebase()
-            else navigateToRetry()
-        }
-    }
-
 
     private fun setupFirebase() {
         homeViewModel.firebaseQueryLiveData.observe(viewLifecycleOwner) { dataSnapshot ->
